@@ -1,5 +1,9 @@
+# Bitbucket pipeline to push your frontend to s3. this implementation is used with angular11.
+# The build step is excluded as this might fail the pipeline if the memory limit is exceeded. 
+# If you want to include the build step, and have a large project, set docker size to 2x and increase the max memory. 
 options:
  docker: true
+ #size: 2x
 definitions:
  services:
   - docker
@@ -14,7 +18,7 @@ pipelines:
          script:
            - aws s3 rm --recursive s3://$S3_BUCKET
      - step:
-         name: move build files, deploy to s3
+         name: Build, move build files, deploy to s3
          # move files in dist, temp, to root. * only these files are needed, you don't have to push the rest
          script:
            - cd dist && mv <project-name>/* ../ && cd .. # the contents need to be in root for s3 to render
@@ -27,7 +31,6 @@ pipelines:
                COMMAND: "upload"
                LOCAL_PATH: "${BITBUCKET_CLONE_DIR}" # Copies the current dir and all included files. 
                ACL: "public-read"
-	
      - step: # Optional. for when you have a cloudfront distribution in front of your s3 bucket.
          name: Invalidate cloudfront dist
          image: tstrohmeier/awscli:3.6.4
