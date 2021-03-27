@@ -1,0 +1,26 @@
+# in github actions, using the amazing https://github.com/EndBug/add-and-commit and a cron job, you are able to make a auto committer. 
+# usefull for 'Self-modifying code' projects, or if you find yourself forgetting to commit often. 
+
+name: EveryDay
+
+on:
+  schedule: [{cron: "30 7 * * *"}] # change this to change the commit frequency
+  push: {branches: "main"}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Run a multi-line script
+        run: |
+          # Run your custom steps here
+      
+      - uses: EndBug/add-and-commit@v6
+        with:
+         add: '.'
+         author_name: <name>
+         author_email: <email>
+         branch: main
+         cwd: '.'
+         message: "new commit"
